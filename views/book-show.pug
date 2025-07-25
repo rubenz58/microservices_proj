@@ -1,0 +1,49 @@
+extends layout
+
+block content
+  .book-details
+    h1= book.title
+    p
+      strong Author: 
+      = book.author
+    p
+      strong Publisher: 
+      = book.publisher
+    p
+      strong Pages: 
+      = book.pageCount
+    p
+      strong Release Date: 
+      = book.releaseDate
+  
+  .ratings-section
+    h2 Ratings
+    if ratings && ratings.ratings && ratings.ratings.length > 0
+      p
+        strong Average Rating: 
+        = ratings.average
+        | /5
+      ul.ratings-list
+        each rating in ratings.ratings
+          li= rating.value + '/5'
+    else
+      p No ratings yet.
+  
+  .add-rating
+    h3 Add a Rating
+    form(action=`/books/${book.id}/ratings` method='POST')
+      .form-group
+        label(for='email') Email:
+        input#email(type='email' name='email' required)
+      
+      .form-group
+        label(for='value') Rating (1-5):
+        select#value(name='value' required)
+          option(value='') Select rating
+          option(value='1') 1
+          option(value='2') 2
+          option(value='3') 3
+          option(value='4') 4
+          option(value='5') 5
+      
+      button(type='submit') Submit Rating

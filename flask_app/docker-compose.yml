@@ -1,0 +1,42 @@
+services:
+    db:
+      image: postgres:16-alpine
+      environment:
+        POSTGRES_USER: ratings_user
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: ratings
+      volumes:
+        - postgres-db:/var/lib/postgresql/data
+      networks:
+        pgflaskapp:
+          aliases:
+            - "postgres"
+
+    api:
+      build: .
+      image: flaskapp
+      networks:
+        - pgflaskapp
+      ports:
+        - "5001:5001"
+      environment:
+        DB_USERNAME: ratings_user
+        DB_PASSWORD: password
+        DB_DATABASE: ratings
+        DB_HOST: postgres
+        FLASK_ENV: development
+        DATABASE_URL: postgresql://ratings_user:password@postgres:5432/ratings  # Add this line
+
+      volumes:
+        - ".:/app"
+      depends_on:
+        - "db"
+      command: ["./entrypoint.sh"]
+
+
+volumes:
+  postgres-db: {}
+
+networks:
+  pgflaskapp:
+    driver: bridge
